@@ -1,0 +1,22 @@
+{
+  "name": "bulid-your-own-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "bulid-your-own-cli": "./bin/www.js"
+  },
+  "dependencies": {
+    "commander": "^3.0.1",
+    "download-git-repo": "^2.0.0",
+    "inquirer": "^7.0.0",
+    "ncp": "^2.0.0",
+    "ora": "^3.4.0"
+  }
+}
