@@ -33,7 +33,7 @@ Object.keys(actionsMap).forEach((action) => {
       if (action === '*') { // 如果动作没匹配到说明输入有误
         console.log(acitonMap[action].description);
       } else { // 引用对应的动作文件 将参数传入
-        require(path.resolve(__dirname+"/template", action))(...process.argv.slice(3));
+        require(path.resolve(__dirname+"/commands", action))(...process.argv.slice(3));
       }
     })
 });
