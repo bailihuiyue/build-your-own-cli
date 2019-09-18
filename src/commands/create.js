@@ -28,73 +28,73 @@ const fetchAntdPro = () => {
 
 module.exports = async (projectName, args) => {
     // tip:获取用户输入的内容
-    // const { addLogin } = await prompt({
-    //     type: "confirm",
-    //     message: "add Login blocks?",
-    //     name: "addLogin",
-    // });
-    // const { mergeConfig } = await prompt({
-    //     type: "confirm",
-    //     message: "merge config files?",
-    //     name: "mergeConfig",
-    // });
-    // const { yarn } = await prompt({
-    //     type: "confirm",
-    //     message: "install packages immediately?",
-    //     name: "yarn",
-    // });
-    // const { mergeRequest } = await prompt({
-    //     type: "confirm",
-    //     message: "merge request files?",
-    //     name: "mergeRequest",
-    // });
-    // const { projectVersion } = await prompt({
-    //     type: "input",
-    //     message: "please enter project version",
-    //     name: "projectVersion",
-    // });
+    const { addLogin } = await prompt({
+        type: "confirm",
+        message: "add Login blocks?",
+        name: "addLogin",
+    });
+    const { mergeConfig } = await prompt({
+        type: "confirm",
+        message: "merge config files?",
+        name: "mergeConfig",
+    });
+    const { yarn } = await prompt({
+        type: "confirm",
+        message: "install packages immediately?",
+        name: "yarn",
+    });
+    const { mergeRequest } = await prompt({
+        type: "confirm",
+        message: "merge request files?",
+        name: "mergeRequest",
+    });
+    const { author } = await prompt({
+        type: "input",
+        message: "please enter author",
+        name: "author",
+    });
 
     // tip:获取ant design代码
-    // const fetchCb = await waiting(fetchAntdPro, 'fetching antd pro');
-    // if (fetchCb) {
-    //     if (addLogin) {
-    //         console.log(addLogin)
-    //     }
-    //     if (mergeConfig) {
-    //         console.log(mergeConfig)
-    //     }
-    //     if (mergeRequest) {
-    //         console.log(mergeRequest)
-    //     }
-    // } else {
-    //     console.log("download failed,please try again");
-    // }
+    const fetchCb = await waiting(fetchAntdPro, 'fetching antd pro');
+    if (fetchCb) {
+        if (addLogin) {
+            console.log(addLogin)
+        }
+        if (mergeConfig) {
+            console.log(mergeConfig)
+        }
+        if (mergeRequest) {
+            console.log(mergeRequest)
+        }
+    } else {
+        console.log("download failed,please try again");
+    }
     // tip:将修改好的版本号,项目名称写回package.json文件
-    // replaceJSONContent({ path: packageJsonPath, content: { name: projectName, version: projectVersion } });
+    replaceJSONContent({ path: packageJsonPath, content: { name: projectName, author } });
     // tip:将项目名称写入模板的title
-    // const documentEjsTpl = fs.readFileSync(documentEjsTplPath, 'utf-8');
-    // replaceFileContent({
-    //     path: documentEjsPath,
-    //     content: documentEjsTpl + `
-    // <title>${projectName}</title>`,
-    //     reg: "<title>"
-    // });
-    // replaceFileContent({ path: defaultSettingsPath, content: `  title: '${projectName}',`, reg: "title:" });
+    const documentEjsTpl = fs.readFileSync(documentEjsTplPath, 'utf-8');
+    replaceFileContent({
+        path: documentEjsPath,
+        content: documentEjsTpl + `
+    <title>${projectName}</title>`,
+        reg: "<title>"
+    });
+    replaceFileContent({ path: defaultSettingsPath, content: `  title: '${projectName}',`, reg: "title:" });
 
-    //业务相关的内容替换
-    // 替换config文件
+    // tip:业务相关的内容替换
+    // tip:替换config文件
     mergeConfigFile({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath });
 
     // **************************此行内容永远在最后执行************************
     // tip:安装依赖
-    // if (yarn) {
-    //     await waiting(() => new Promise(
-    //         function (resolve, reject) {
-    //             shelljs.cd(downloadPath);
-    //             shelljs.exec('yarn install');
-    //             resolve(true);
-    //         }
-    //     ), 'installing packages ');
-    //     shelljs.exec('npm start');
-    // }
+    if (yarn) {
+        await waiting(() => new Promise(
+            function (resolve, reject) {
+                shelljs.cd(downloadPath);
+                shelljs.exec('yarn install');
+                resolve(true);
+            }
+        ), 'installing packages ');
+        shelljs.exec('npm start');
+    }
 };
