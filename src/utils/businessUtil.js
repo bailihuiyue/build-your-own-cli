@@ -1,5 +1,4 @@
 const fs = require('fs');
-const ejs = require('ejs');
 const { copyFile, readTepmlate, appendFile } = require('./index');
 
 mergeConfigFile = ({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath }) => {

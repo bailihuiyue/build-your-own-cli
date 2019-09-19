@@ -55,7 +55,6 @@ const appendFile = (from, to) => {
   fs.appendFile(to, fs.readFileSync(from), (error) => {
     if (error) return console.log("add file error" + error.message);
   });
-  //fs.createReadStream(src).pipe(fs.createWriteStream(dst));大文件复制
 }
 
 const readTepmlate = ({ tplPath, options, cb }) => {

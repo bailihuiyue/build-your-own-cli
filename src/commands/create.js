@@ -53,90 +53,90 @@ const fetchAntdPro = () => {
 
 module.exports = async (projectName, args) => {
 
-    // // tip: 获取用户输入的内容
-    // const { addLogin } = await prompt({
-    //     type: "confirm",
-    //     message: "add Login blocks?",
-    //     name: "addLogin",
-    // });
-    // const { mergeConfig } = await prompt({
-    //     type: "confirm",
-    //     message: "merge config files?",
-    //     name: "mergeConfig",
-    // });
-    // const { yarn } = await prompt({
-    //     type: "confirm",
-    //     message: "install packages immediately?",
-    //     name: "yarn",
-    // });
-    // const { mergeRequest } = await prompt({
-    //     type: "confirm",
-    //     message: "merge request files?",
-    //     name: "mergeRequest",
-    // });
-    // const { author } = await prompt({
-    //     type: "input",
-    //     message: "please enter author",
-    //     name: "author",
-    // });
+    // tip: 获取用户输入的内容
+    const { addLogin } = await prompt({
+        type: "confirm",
+        message: "add Login blocks?",
+        name: "addLogin",
+    });
+    const { mergeConfig } = await prompt({
+        type: "confirm",
+        message: "merge config files?",
+        name: "mergeConfig",
+    });
+    const { yarn } = await prompt({
+        type: "confirm",
+        message: "install packages immediately?",
+        name: "yarn",
+    });
+    const { mergeRequest } = await prompt({
+        type: "confirm",
+        message: "merge request files?",
+        name: "mergeRequest",
+    });
+    const { author } = await prompt({
+        type: "input",
+        message: "please enter author",
+        name: "author",
+    });
 
-    // // tip:获取ant design代码
-    // const fetchCb = await waiting(fetchAntdPro, 'fetching antd pro');
-    // if (fetchCb) {
-    //     // tip:将修改好的版本号,项目名称写回package.json文件
-    //     replaceJSONContent({ path: packageJsonPath, content: { name: projectName, author } }); //TODO:目前有bug
-    //     // tip:将项目名称写入模板的title
-    //     const documentEjsTpl = fs.readFileSync(documentEjsTplPath, 'utf-8');
-    //     replaceFileContent({
-    //         path: documentEjsPath,
-    //         content: documentEjsTpl + `
-    // <title>${projectName}</title>`,
-    //         reg: "<title>"
-    //     });
-    //     replaceFileContent({ path: defaultSettingsPath, content: `  title: '${projectName}',`, reg: "title:" });
+    // tip:获取ant design代码
+    const fetchCb = await waiting(fetchAntdPro, 'fetching antd pro');
+    if (fetchCb) {
+        // tip:将修改好的版本号,项目名称写回package.json文件
+        replaceJSONContent({ path: packageJsonPath, content: { name: projectName, author } }); //TODO:目前有bug
+        // tip:将项目名称写入模板的title
+        const documentEjsTpl = fs.readFileSync(documentEjsTplPath, 'utf-8');
+        replaceFileContent({
+            path: documentEjsPath,
+            content: documentEjsTpl + `
+    <title>${projectName}</title>`,
+            reg: "<title>"
+        });
+        replaceFileContent({ path: defaultSettingsPath, content: `  title: '${projectName}',`, reg: "title:" });
 
-    //     // 拷贝颜色(主题)文件到项目
-    //     copyFile(configLessTplPath, configLessPath);
-    //     console.log("config.less copied successful");
-    //     // 拷贝footer内容到BasicLayout
-    //     mergeBasicLayoutFile({ BasicLayoutPath, FooterTplPath, projectName, icoPath, icoTplPath, globalLessTplPath, globalLessPath });
+        // 拷贝颜色(主题)文件到项目
+        copyFile(configLessTplPath, configLessPath);
+        console.log("config.less copied successful");
+        // 拷贝footer内容到BasicLayout
+        mergeBasicLayoutFile({ BasicLayoutPath, FooterTplPath, projectName, icoPath, icoTplPath, globalLessTplPath, globalLessPath });
 
-    //     if (mergeConfig) {
-    //         // tip:替换config文件
-    //         mergeConfigFile({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath });
-    //         console.log("config.ts replaced successful");
-    //     }
-    //     if (mergeRequest) {
-    //         copyFile(publicWordTplPath, publicWordPath);
-    //         copyFile(requestTplPath, requestPath);
-    //         appendFile(authorityTsTplPath, authorityTsPath);
-    //     }
-    //     if (addLogin) {
-    //         shelljs.cd(downloadPath);
-    //         shelljs.exec('umi block add Login --page');
-    //         copyFile(logoTplPath, logoPath);
-    //         copyFile(UserLayoutTplPath, UserLayoutPath);
-    //         copyFile(UserLayoutLessTplPath, UserLayoutLessPath);
-    //         console.log("Login block added successful");
-    //         wirteLoginWords({ tplPath: loginWordsEnTplPath, filePath: loginWordsEnPath, projectName, lang: 'en-US', index: loginWordsIndexPath });
-    //        wirteLoginWords({ tplPath: loginWordsCnTplPath, filePath: loginWordsCnPath, projectName, lang: 'zh-CN', index: loginWordsIndexPath });
-    //     }
+        if (mergeConfig) {
+            // tip:替换config文件
+            mergeConfigFile({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath });
+            console.log("config.ts replaced successful");
+        }
+        if (mergeRequest) {
+            copyFile(publicWordTplPath, publicWordPath);
+            copyFile(requestTplPath, requestPath);
+            appendFile(authorityTsTplPath, authorityTsPath);
+        }
+        if (addLogin) {
+            shelljs.cd(downloadPath);
+            shelljs.exec('umi block add Login --page');
+            copyFile(logoTplPath, logoPath);
+            copyFile(UserLayoutTplPath, UserLayoutPath);
+            copyFile(UserLayoutLessTplPath, UserLayoutLessPath);
+            console.log("Login block added successful");
+            wirteLoginWords({ tplPath: loginWordsEnTplPath, filePath: loginWordsEnPath, projectName, lang: 'en-US', index: loginWordsIndexPath });
+           wirteLoginWords({ tplPath: loginWordsCnTplPath, filePath: loginWordsCnPath, projectName, lang: 'zh-CN', index: loginWordsIndexPath });
+        }
 
-    //     // TODO:1改造登录界面,2.添加request文件
+        // TODO:1改造登录界面,2.添加request文件
 
-    //     // **************************此行内容永远在最后执行************************
-    //     // tip:安装依赖
-    //     if (yarn) {
-    //         await waiting(() => new Promise(
-    //             function (resolve, reject) {
-    //                 shelljs.cd(downloadPath);
-    //                 shelljs.exec('yarn install');
-    //                 resolve(true);
-    //             }
-    //         ), 'installing packages ');
-    //         shelljs.exec('npm start');
-    //     }
-    // } else {
-    //     console.log("download failed, please try again");
-    // }
+        // **************************此行内容永远在最后执行************************
+        // tip:安装依赖
+        if (yarn) {
+            await waiting(() => new Promise(
+                function (resolve, reject) {
+                    shelljs.cd(downloadPath);
+                    shelljs.exec('yarn install');
+                    resolve(true);
+                }
+            ), 'installing packages ');
+            shelljs.exec('npm start');
+        }
+    } else {
+        console.log("download failed, please try again");
+    }
 };
