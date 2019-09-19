@@ -1,4 +1,5 @@
 const fs = require('fs');
+const ejs = require('ejs');
 const { copyFile } = require('./index');
 
 mergeConfigFile = ({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath }) => {
@@ -85,26 +86,44 @@ const themeColor = '#C8102e';
         }
         fs.writeFileSync(configTsPath, newFileArr.join('\n'));
     }
+}
 
-    // 暂时没用了
-    // console.log(newFileArr.join("\n"));
-    // const orgFile = fs.readFileSync(configTsPath, 'utf-8').split('\n');
-    // // const b = orgFile.match(/export default(\S+)as Config/g);
-    // let tepm = [];
-    // for (let a in orgFile) {
-    //     //tip:去注释
-    //     const b = orgFile[a].replace(/("([^\\\"]*(\\.)?)*")|('([^\\\']*(\\.)?)*')|(\/{2,}.*?(\r|\n|$))|(\/\*(\n|.)*?\*\/)/g, '').replace(/\s*/g, "");
-    //     if (b) {
-    //         tepm.push(b)
-    //     }
-    // }
-    // const b= orgFile.replace(/(\n+)|(\/{2,}.*?(\r|\n))|(\/\*(\n|.)*?\*\/)/g, '');
-    // tepm = tepm.join("")
-    //获取中间的json内容
-    // var a = tepm.match(/exportdefault(.*)asIConfig;/)
-    // var b = a[1].replace(/,\/\*(.*)\*\//g, "").replace("plugins,", "plugins:plugins,");
-    // Object c = b;
-    // console.log(c);
+mergeBasicLayoutFile = ({ BasicLayoutPath, FooterTplPath, projectName }) => {
+    let file = fs.readFileSync(BasicLayoutPath, 'utf-8').split('\n');
+    let hasWriteHead = false;
+    for (let i = 0, len = file.length; i < len; i++) {
+        let prevLine = file[i === 0 ? 0 : i - 1];
+        let currLine = file[i];
+        let nextLine = file[i + 1];
+
+        if (currLine.indexOf("import") >= 0 &&
+            nextLine.match(/^\s*$/, '')
+            && !hasWriteHead) {
+            file[i] += `\r\nimport { Icon } from 'antd';`
+            hasWriteHead = true;
+        }
+
+        if (currLine.indexOf("return defaultDom") >= 0 &&
+            nextLine.indexOf("}") >= 0 &&
+            prevLine.indexOf("!isAntDesignPro()") >= 0) {
+            ejs.renderFile(
+                FooterTplPath,
+                {
+                    year: new Date().getFullYear(),
+                    projectName
+                },
+                (err, data) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        file[i] = data;
+                    }
+                }
+            )
+        }
+    }
+    fs.writeFileSync(BasicLayoutPath, file.join('\n'));
+    console.log("footer replaced successful");
 }
 
 module.exports = {

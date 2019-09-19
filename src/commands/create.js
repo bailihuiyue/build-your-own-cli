@@ -16,10 +16,23 @@ const documentEjsPath = `${downloadPath}/src/pages/document.ejs`;
 const defaultSettingsPath = `${downloadPath}/config/defaultSettings.ts`;
 const configTsPath = `${downloadPath}/config/config.ts`;
 const routeConfigTsPath = `${downloadPath}/config/router.config.ts`;
+const configLessPath = `${downloadPath}/src/config.less`;
+const requestPath = `${downloadPath}/src/utils/request.ts`;
+const logoPath = `${downloadPath}/src/assets/login.png`;
+const UserLayoutPath = `${downloadPath}/src/layouts/UserLayout.tsx`;
+const publicWordPath = `${downloadPath}/src/utils/publicWord.ts`;
+const BasicLayoutPath = `${downloadPath}/src/layouts/BasicLayout.tsx`;
+
 
 const documentEjsTplPath = `${__dirname}/../template/document.ejs.tpl`;
 const configTsTplPath = `${__dirname}/../template/config.ts.tpl`;
 const routeConfigTsTplPath = `${__dirname}/../template/router.config.ts.tpl`;
+const configLessTplPath = `${__dirname}/../template/config.less.tpl`;
+const requestTplPath = `${__dirname}/../template/request.ts.tpl`;
+const logoTplPath = `${__dirname}/../template/login.png`;
+const UserLayoutTplPath = `${__dirname}/../template/UserLayout.tsx.tpl`;
+const FooterTplPath = `${__dirname}/../template/Footer.tsx.tpl`;
+const publicWordTplPath = `${__dirname}/../template/publicWord.ts.tpl`;
 
 // 1).获取Ant design Pro process.cwd()表示当前执行程序的路径（执行命令行时候的路径,不是代码路径 例如 在根目录下执行 node ./xxx/xxx/a.js 则 cwd 返回的是 根目录地址,或者使用path.join(path.resolve(), projectName)也可以达到同样的效果
 const fetchAntdPro = () => {
@@ -27,74 +40,87 @@ const fetchAntdPro = () => {
 };
 
 module.exports = async (projectName, args) => {
+    mergeBasicLayoutFile({ BasicLayoutPath, FooterTplPath, projectName });
     // tip:获取用户输入的内容
-    const { addLogin } = await prompt({
-        type: "confirm",
-        message: "add Login blocks?",
-        name: "addLogin",
-    });
-    const { mergeConfig } = await prompt({
-        type: "confirm",
-        message: "merge config files?",
-        name: "mergeConfig",
-    });
-    const { yarn } = await prompt({
-        type: "confirm",
-        message: "install packages immediately?",
-        name: "yarn",
-    });
-    const { mergeRequest } = await prompt({
-        type: "confirm",
-        message: "merge request files?",
-        name: "mergeRequest",
-    });
-    const { author } = await prompt({
-        type: "input",
-        message: "please enter author",
-        name: "author",
-    });
+    // const { addLogin } = await prompt({
+    //     type: "confirm",
+    //     message: "add Login blocks?",
+    //     name: "addLogin",
+    // });
+    // const { mergeConfig } = await prompt({
+    //     type: "confirm",
+    //     message: "merge config files?",
+    //     name: "mergeConfig",
+    // });
+    // const { yarn } = await prompt({
+    //     type: "confirm",
+    //     message: "install packages immediately?",
+    //     name: "yarn",
+    // });
+    // const { mergeRequest } = await prompt({
+    //     type: "confirm",
+    //     message: "merge request files?",
+    //     name: "mergeRequest",
+    // });
+    // const { author } = await prompt({
+    //     type: "input",
+    //     message: "please enter author",
+    //     name: "author",
+    // });
 
-    // tip:获取ant design代码
-    const fetchCb = await waiting(fetchAntdPro, 'fetching antd pro');
-    if (fetchCb) {
-        if (addLogin) {
-            console.log(addLogin)
-        }
-        if (mergeConfig) {
-            console.log(mergeConfig)
-        }
-        if (mergeRequest) {
-            console.log(mergeRequest)
-        }
-    } else {
-        console.log("download failed,please try again");
-    }
-    // tip:将修改好的版本号,项目名称写回package.json文件
-    replaceJSONContent({ path: packageJsonPath, content: { name: projectName, author } });
-    // tip:将项目名称写入模板的title
-    const documentEjsTpl = fs.readFileSync(documentEjsTplPath, 'utf-8');
-    replaceFileContent({
-        path: documentEjsPath,
-        content: documentEjsTpl + `
-    <title>${projectName}</title>`,
-        reg: "<title>"
-    });
-    replaceFileContent({ path: defaultSettingsPath, content: `  title: '${projectName}',`, reg: "title:" });
+    // // tip:获取ant design代码
+    // const fetchCb = await waiting(fetchAntdPro, 'fetching antd pro');
+    // if (fetchCb) {
+    //     // tip:将修改好的版本号,项目名称写回package.json文件
+    //     replaceJSONContent({ path: packageJsonPath, content: { name: projectName, author } }); //TODO:目前有bug
+    //     // tip:将项目名称写入模板的title
+    //     const documentEjsTpl = fs.readFileSync(documentEjsTplPath, 'utf-8');
+    //     replaceFileContent({
+    //         path: documentEjsPath,
+    //         content: documentEjsTpl + `
+    // <title>${projectName}</title>`,
+    //         reg: "<title>"
+    //     });
+    //     replaceFileContent({ path: defaultSettingsPath, content: `  title: '${projectName}',`, reg: "title:" });
 
-    // tip:业务相关的内容替换
-    // tip:替换config文件
-    mergeConfigFile({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath });
+    //     // 拷贝颜色(主题)文件到项目
+    //     copyFile(configLessTplPath, configLessPath);
+    //     console.log("config.less copied successful");
+    //     // 拷贝footer内容到BasicLayout
+    //     mergeBasicLayoutFile({ BasicLayoutPath, FooterTplPath, projectName });
 
-    // **************************此行内容永远在最后执行************************
-    // tip:安装依赖
-    if (yarn) {
-        await waiting(() => new Promise(
-            function (resolve, reject) {
-                shelljs.cd(downloadPath);
-                shelljs.exec('yarn install');
-                resolve(true);
-            }
-        ), 'installing packages ');
-        shelljs.exec('npm start');
-    }
+    //     if (mergeConfig) {
+    //         // tip:替换config文件
+    //         mergeConfigFile({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath });
+    //         console.log("config.ts replaced successful");
+    //     }
+    //     if (mergeRequest) {
+    //         copyFile(publicWordTplPath, publicWordPath);
+    //         copyFile(requestTplPath, requestPath);
+    //     }
+    //     if (addLogin) {
+    //         shelljs.cd(downloadPath);
+    //         shelljs.exec('umi block add Login');
+    //         copyFile(logoTplPath, logoPath);
+    //         copyFile(UserLayoutTplPath, UserLayoutPath);
+    //         console.log("Login block added successful");
+    //     }
+
+    //     // TODO:1改造登录界面,2.添加request文件
+
+    //     // **************************此行内容永远在最后执行************************
+    //     // tip:安装依赖
+    //     if (yarn) {
+    //         await waiting(() => new Promise(
+    //             function (resolve, reject) {
+    //                 shelljs.cd(downloadPath);
+    //                 shelljs.exec('yarn install');
+    //                 resolve(true);
+    //             }
+    //         ), 'installing packages ');
+    //         shelljs.exec('npm start');
+    //     }
+    // } else {
+    //     console.log("download failed, please try again");
+    // }
 };
