@@ -19,7 +19,7 @@ export default [
         path: '/',
         name: 'welcome',
         icon: 'smile',
-        hideInMenu: true,
+        hideInMenu: false,
         component: './Welcome',
       },
       {

@@ -4,6 +4,7 @@ const { name, version } = require('../../package.json');
 const downloadPath = process.cwd() + "/test";
 const inquirer = require('inquirer');
 const fs = require('fs'); //文件模块
+const ejs = require('ejs');
 
 const waiting = async (fn, message) => {
   const spinner = ora(message);
@@ -49,6 +50,28 @@ const copyFile = (from, to) => {
   fs.writeFileSync(to, fs.readFileSync(from));
   //fs.createReadStream(src).pipe(fs.createWriteStream(dst));大文件复制
 }
+
+const appendFile = (from, to) => {
+  fs.appendFile(to, fs.readFileSync(from), (error) => {
+    if (error) return console.log("add file error" + error.message);
+  });
+  //fs.createReadStream(src).pipe(fs.createWriteStream(dst));大文件复制
+}
+
+const readTepmlate = ({ tplPath, options, cb }) => {
+  ejs.renderFile(
+    tplPath,
+    options,
+    (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        cb(data);
+      }
+    }
+  )
+}
+
 module.exports = {
   name,
   version,
@@ -57,5 +80,7 @@ module.exports = {
   prompt,
   replaceFileContent,
   replaceJSONContent,
-  copyFile
+  copyFile,
+  readTepmlate,
+  appendFile
 };

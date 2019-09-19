@@ -1,6 +1,6 @@
 const fs = require('fs');
 const ejs = require('ejs');
-const { copyFile } = require('./index');
+const { copyFile, readTepmlate, appendFile } = require('./index');
 
 mergeConfigFile = ({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath }) => {
     let file = fs.readFileSync(configTsPath, 'utf-8').split('\n');
@@ -88,7 +88,10 @@ const themeColor = '#C8102e';
     }
 }
 
-mergeBasicLayoutFile = ({ BasicLayoutPath, FooterTplPath, projectName }) => {
+mergeBasicLayoutFile = ({ BasicLayoutPath, FooterTplPath, projectName, icoPath, icoTplPath, globalLessTplPath, globalLessPath }) => {
+    copyFile(icoTplPath, icoPath);
+    appendFile(globalLessTplPath, globalLessPath);
+    console.log("logo replaced successful");
     let file = fs.readFileSync(BasicLayoutPath, 'utf-8').split('\n');
     let hasWriteHead = false;
     for (let i = 0, len = file.length; i < len; i++) {
@@ -106,26 +109,61 @@ mergeBasicLayoutFile = ({ BasicLayoutPath, FooterTplPath, projectName }) => {
         if (currLine.indexOf("return defaultDom") >= 0 &&
             nextLine.indexOf("}") >= 0 &&
             prevLine.indexOf("!isAntDesignPro()") >= 0) {
-            ejs.renderFile(
-                FooterTplPath,
-                {
+            readTepmlate({
+                tplPath: FooterTplPath,
+                options: {
                     year: new Date().getFullYear(),
                     projectName
                 },
-                (err, data) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        file[i] = data;
-                    }
-                }
-            )
+                cb: (data) => file[i] = data
+            });
         }
+
+        if (currLine.indexOf("import logo from") >= 0) {
+            file[i] = `\r\nimport logo from '../assets/logo.png';`
+        }
+
     }
     fs.writeFileSync(BasicLayoutPath, file.join('\n'));
     console.log("footer replaced successful");
 }
 
+wirteLoginWords = ({ tplPath, filePath, projectName, lang, index }) => {
+    readTepmlate({
+        tplPath,
+        options: {
+            projectName
+        },
+        cb: (data) => {
+            fs.writeFileSync(filePath, data);
+            const destPath = index + lang + '.ts';
+            let file = fs.readFileSync(destPath, 'utf-8').split('\n');
+            hasWriteHead = false;
+            hasWriteBody = false;
+            for (let i = 0, len = file.length; i < len; i++) {
+                let prevLine = file[i === 0 ? 0 : i - 1];
+                let currLine = file[i];
+                let nextLine = file[i + 1];
+                if (currLine.indexOf("import") >= 0 &&
+                    nextLine.match(/^\s*$/, '') &&
+                    !hasWriteHead) {
+                    file[i] += `\r\nimport login  from './${lang}/login';`
+                    hasWriteHead = true;
+                }
+                if (currLine.indexOf("...") >= 0 &&
+                    nextLine.indexOf("}") >= 0 &&
+                    !hasWriteBody) {
+                    file[i] += `\r\n  ...login`;
+                    hasWriteBody = true;
+                }
+            }
+            fs.writeFileSync(destPath, file.join('\n'));
+        }
+    });
+}
+
 module.exports = {
-    mergeConfigFile
+    mergeConfigFile,
+    wirteLoginWords,
+    mergeBasicLayoutFile
 };

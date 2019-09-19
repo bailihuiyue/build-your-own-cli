@@ -6,12 +6,12 @@ import { extend } from 'umi-request';
 import { notification } from 'antd';
 import { getLocale } from 'umi-plugin-react/locale'
 import { regex, wordsFormat } from './publicWord'
-import {getToken} from '@/utils/authority'
-import PRO_URL from 'config';
+import { getToken } from '@/utils/authority'
+//import PRO_URL from 'config';
 
 const token:string | null = getToken();
 const DEV_URL:string | null = 'https://xxx';
-export const BaseUrl:string | null = process.env.NODE_ENV === 'development' ? DEV_URL : PRO_URL
+export const BaseUrl:string | null = process.env.NODE_ENV === 'development' ? DEV_URL : 'PRO_URL'
 
 const codeMessage:any = {
   200: '服务器成功返回请求的数据。',
