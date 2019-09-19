@@ -32,6 +32,7 @@ const loginWordsIndexPath = `${downloadPath}/src/locales/`;
 
 const documentEjsTplPath = `${__dirname}/../template/document.ejs.tpl`;
 const configTsTplPath = `${__dirname}/../template/config.ts.tpl`;
+const configTsPluginTplPath = `${__dirname}/../template/config.ts.plugin.tpl`;
 const routeConfigTsTplPath = `${__dirname}/../template/router.config.ts.tpl`;
 const configLessTplPath = `${__dirname}/../template/config.less.tpl`;
 const globalLessTplPath = `${__dirname}/../template/global.less.tpl`;
@@ -52,7 +53,6 @@ const fetchAntdPro = () => {
 };
 
 module.exports = async (projectName, args) => {
-
     // tip: 获取用户输入的内容
     const { addLogin } = await prompt({
         type: "confirm",
@@ -103,7 +103,7 @@ module.exports = async (projectName, args) => {
 
         if (mergeConfig) {
             // tip:替换config文件
-            mergeConfigFile({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath });
+            mergeConfigFile({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath, configTsPluginTplPath });
             console.log("config.ts replaced successful");
         }
         if (mergeRequest) {
@@ -119,10 +119,10 @@ module.exports = async (projectName, args) => {
             copyFile(UserLayoutLessTplPath, UserLayoutLessPath);
             console.log("Login block added successful");
             wirteLoginWords({ tplPath: loginWordsEnTplPath, filePath: loginWordsEnPath, projectName, lang: 'en-US', index: loginWordsIndexPath });
-           wirteLoginWords({ tplPath: loginWordsCnTplPath, filePath: loginWordsCnPath, projectName, lang: 'zh-CN', index: loginWordsIndexPath });
+            wirteLoginWords({ tplPath: loginWordsCnTplPath, filePath: loginWordsCnPath, projectName, lang: 'zh-CN', index: loginWordsIndexPath });
         }
 
-        // TODO:1改造登录界面,2.添加request文件
+        // TODO:1添加进度条加颜色
 
         // **************************此行内容永远在最后执行************************
         // tip:安装依赖

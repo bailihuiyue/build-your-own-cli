@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { copyFile, readTepmlate, appendFile } = require('./index');
 
-mergeConfigFile = ({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath }) => {
+mergeConfigFile = ({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath, configTsPluginTplPath }) => {
     let file = fs.readFileSync(configTsPath, 'utf-8').split('\n');
     let hasDelRoute = 0;
     let hasDelTheme = 0;
@@ -12,6 +12,7 @@ mergeConfigFile = ({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, conf
     let prefix = "";
     for (let i = 0, len = file.length; i < len; i++) {
         // tip:在最开始的地方引入文件和声明
+        let prevLine = file[i === 0 ? 0 : i - 1];
         let currLine = file[i];
         let nextLine = file[i + 1];
         if (currLine.indexOf("import") >= 0 && nextLine.indexOf("import") < 0 && !hasWriteHead) {
@@ -82,6 +83,17 @@ const themeColor = '#C8102e';
         if (currLine.indexOf("plugins,") >= 0) {
             let tpl = fs.readFileSync(configTsTplPath, 'utf-8');
             newFileArr.push(tpl);
+        }
+        // tip:写入NODE_ENV
+        if (currLine.indexOf("process.env") >= 0) {
+            const newline = currLine.replace("}", ", NODE_ENV }");
+            newFileArr.pop();
+            newFileArr.push(newline);
+        }
+        // tip:写入plugins内容
+        if (currLine.indexOf("{") >= 0 && prevLine.indexOf('umi-plugin-react') >= 0) {
+            let plugins = fs.readFileSync(configTsPluginTplPath, 'utf-8');
+            newFileArr.push(plugins);
         }
         fs.writeFileSync(configTsPath, newFileArr.join('\n'));
     }

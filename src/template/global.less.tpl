@@ -19,5 +19,9 @@
   .ant-menu.ant-menu-dark .ant-menu-item-selected, .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected{
     border-right: 3px solid @primary-color !important;
   }
-
+  .ant-menu-dark{
+     .ant-menu-inline.ant-menu-sub{
+      box-shadow:0 2px 8px rgba(189, 164, 164, 0.45) inset !important;
+     }
+  }
 }
