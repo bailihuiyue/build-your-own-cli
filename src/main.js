@@ -1,4 +1,3 @@
-console.log(1)
 const program = require('commander');
 const { version } = require('./utils');
 const path = require('path');
@@ -8,15 +7,14 @@ const actionsMap = {
     description: 'create project',
     alias: 'cr',
     examples: [
-      'quick-cli create <template-name>',
+      'build-your-own-cli create <project-name>',
     ],
   },
-  config: { // 配置配置文件
-    description: 'config info',
-    alias: 'c',
+  edit_tpl: {
+    description: 'edit template files',
+    alias: 'e',
     examples: [
-      'quick-cli config get <k>',
-      'quick-cli config set <k> <v>',
+      'build-your-own-cli edit_tpl'
     ],
   },
   '*': {
@@ -31,9 +29,9 @@ Object.keys(actionsMap).forEach((action) => {
     .description(actionsMap[action].description) // 命令的描述
     .action(() => { // 动作
       if (action === '*') { // 如果动作没匹配到说明输入有误
-        console.log(acitonMap[action].description);
+        console.log('command not found, type -h for help');
       } else { // 引用对应的动作文件 将参数传入
-        require(path.resolve(__dirname+"/commands", action))(...process.argv.slice(3));
+        require(path.resolve(__dirname + "/commands", action))(...process.argv.slice(3));
       }
     })
 });
