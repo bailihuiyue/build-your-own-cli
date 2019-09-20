@@ -1,5 +1,5 @@
   block: {
-    defaultGitUrl: 'https://github.com/ant-design/pro-blocks', 
+    defaultGitUrl: 'https://github.com/bailihuiyue/ant-design-pro-blocks.git', 
   },
   externals: {
     config: 'config', 
