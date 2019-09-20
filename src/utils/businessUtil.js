@@ -135,6 +135,7 @@ mergeBasicLayoutFile = ({ BasicLayoutPath, FooterTplPath, projectName, icoPath, 
 
     }
     fs.writeFileSync(BasicLayoutPath, file.join('\n'));
+}
 
 wirteLoginWords = ({ tplPath, filePath, projectName, lang, index }) => {
     readTepmlate({

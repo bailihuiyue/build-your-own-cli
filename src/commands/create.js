@@ -55,6 +55,7 @@ const fetchAntdPro = () => {
 };
 
 module.exports = async (projectName, args) => {
+
     console.log('welcome to use build-your-own-cli to build ant design pro project ^_^'.rainbow);
     // tip: 获取用户输入的内容
     const { addLogin } = await prompt({
@@ -114,18 +115,7 @@ module.exports = async (projectName, args) => {
             copyFile(publicWordTplPath, publicWordPath);
             copyFile(requestTplPath, requestPath);
             appendFile(authorityTsTplPath, authorityTsPath);
-            progress({ txt: "config.ts replaced successful", percent: 0.5 });
-        }
-        if (addLogin) {
-            shelljs.cd(downloadPath);
-            shelljs.exec('umi block add Login --page');
-            copyFile(logoTplPath, logoPath);
-            copyFile(UserLayoutTplPath, UserLayoutPath);
-            copyFile(UserLayoutLessTplPath, UserLayoutLessPath);
-
-            wirteLoginWords({ tplPath: loginWordsEnTplPath, filePath: loginWordsEnPath, projectName, lang: 'en-US', index: loginWordsIndexPath });
-            wirteLoginWords({ tplPath: loginWordsCnTplPath, filePath: loginWordsCnPath, projectName, lang: 'zh-CN', index: loginWordsIndexPath });
-            progress({ txt: "Login block added successful", percent: 0.75 });
+            progress({ txt: "request replaced successful", percent: 0.5 });
         }
 
         // **************************此行内容永远在最后执行************************
@@ -139,7 +129,19 @@ module.exports = async (projectName, args) => {
                     resolve(true);
                 }
             ), 'installing packages ');
-            progress({ txt: projectName+" init successful, enjoy!", percent: 1 });
+            if (addLogin) {
+                console.log("Begin to add Login block");
+                shelljs.cd(downloadPath);
+                shelljs.exec('umi block add Login --page');
+                copyFile(logoTplPath, logoPath);
+                copyFile(UserLayoutTplPath, UserLayoutPath);
+                copyFile(UserLayoutLessTplPath, UserLayoutLessPath);
+
+                wirteLoginWords({ tplPath: loginWordsEnTplPath, filePath: loginWordsEnPath, projectName, lang: 'en-US', index: loginWordsIndexPath });
+                wirteLoginWords({ tplPath: loginWordsCnTplPath, filePath: loginWordsCnPath, projectName, lang: 'zh-CN', index: loginWordsIndexPath });
+                progress({ txt: "Login block added successful", percent: 0.75 });
+            }
+            progress({ txt: `${projectName} init successful, enjoy!`.rainbow, percent: 1 });
             shelljs.exec('npm start');
         }
     } else {

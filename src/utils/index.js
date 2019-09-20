@@ -1,7 +1,7 @@
 // 命令行中显示加载中
 const ora = require('ora');
 const { name, version } = require('../../package.json');
-const downloadPath = process.cwd() + "/test";
+const downloadPath = process.cwd();
 const inquirer = require('inquirer');
 const fs = require('fs'); //文件模块
 const ejs = require('ejs');
@@ -52,9 +52,7 @@ const copyFile = (from, to) => {
 }
 
 const appendFile = (from, to) => {
-  fs.appendFile(to, fs.readFileSync(from), (error) => {
-    if (error) return console.log("add file error" + error.message);
-  });
+  fs.appendFileSync(to, fs.readFileSync(from));
 }
 
 const readTepmlate = ({ tplPath, options, cb }) => {

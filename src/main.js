@@ -37,7 +37,6 @@ Object.keys(actionsMap).forEach((action) => {
 });
 
 program.on('--help', () => {
-  console.log('Examples');
   Object.keys(actionsMap).forEach((action) => {
     (actionsMap[action].examples || []).forEach((example) => {
       console.log(`${example}`);

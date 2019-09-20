@@ -6,8 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "publishConfig": {
+    "registry": "http://alm.homecredit.cn/nexus/repository/npm-hosted/"
+  },
   "keywords": [],
-  "author": "",
+  "author": "Ones/bailihuiyue@github",
   "license": "ISC",
   "bin": {
     "build-your-own-cli": "./bin/index.js"
