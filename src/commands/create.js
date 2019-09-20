@@ -1,10 +1,12 @@
 // const axios = require('axios');
 const path = require('path');
 const shelljs = require('shelljs');
+const colors = require('colors');
 // 命令行交互工具
 const inquirer = require('inquirer');
 const { waiting, downloadPath, prompt, replaceFileContent, replaceJSONContent, copyFile, readTepmlate, appendFile } = require('../utils/index');
 const { mergeConfigFile, mergeBasicLayoutFile, wirteLoginWords } = require('../utils/businessUtil');
+const { progress } = require('../utils/progress');
 const { promisify } = require('util');
 const fs = require('fs'); //文件模块
 
@@ -53,6 +55,7 @@ const fetchAntdPro = () => {
 };
 
 module.exports = async (projectName, args) => {
+    console.log('welcome to use build-your-own-cli to build ant design pro project ^_^'.rainbow);
     // tip: 获取用户输入的内容
     const { addLogin } = await prompt({
         type: "confirm",
@@ -83,8 +86,9 @@ module.exports = async (projectName, args) => {
     // tip:获取ant design代码
     const fetchCb = await waiting(fetchAntdPro, 'fetching antd pro');
     if (fetchCb) {
+        progress({ txt: "Get ant pro successful", percent: 0.15 });
         // tip:将修改好的版本号,项目名称写回package.json文件
-        replaceJSONContent({ path: packageJsonPath, content: { name: projectName, author } }); //TODO:目前有bug
+        replaceJSONContent({ path: packageJsonPath, content: { name: projectName, author } });
         // tip:将项目名称写入模板的title
         const documentEjsTpl = fs.readFileSync(documentEjsTplPath, 'utf-8');
         replaceFileContent({
@@ -104,12 +108,13 @@ module.exports = async (projectName, args) => {
         if (mergeConfig) {
             // tip:替换config文件
             mergeConfigFile({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath, configTsPluginTplPath });
-            console.log("config.ts replaced successful");
+            progress({ txt: "config.ts replaced successful", percent: 0.25 });
         }
         if (mergeRequest) {
             copyFile(publicWordTplPath, publicWordPath);
             copyFile(requestTplPath, requestPath);
             appendFile(authorityTsTplPath, authorityTsPath);
+            progress({ txt: "config.ts replaced successful", percent: 0.5 });
         }
         if (addLogin) {
             shelljs.cd(downloadPath);
@@ -117,12 +122,11 @@ module.exports = async (projectName, args) => {
             copyFile(logoTplPath, logoPath);
             copyFile(UserLayoutTplPath, UserLayoutPath);
             copyFile(UserLayoutLessTplPath, UserLayoutLessPath);
-            console.log("Login block added successful");
+
             wirteLoginWords({ tplPath: loginWordsEnTplPath, filePath: loginWordsEnPath, projectName, lang: 'en-US', index: loginWordsIndexPath });
             wirteLoginWords({ tplPath: loginWordsCnTplPath, filePath: loginWordsCnPath, projectName, lang: 'zh-CN', index: loginWordsIndexPath });
+            progress({ txt: "Login block added successful", percent: 0.75 });
         }
-
-        // TODO:1添加进度条加颜色
 
         // **************************此行内容永远在最后执行************************
         // tip:安装依赖
@@ -130,10 +134,12 @@ module.exports = async (projectName, args) => {
             await waiting(() => new Promise(
                 function (resolve, reject) {
                     shelljs.cd(downloadPath);
+                    progress({ txt: "Install node_modules, be patient~~", percent: 0.75 });
                     shelljs.exec('yarn install');
                     resolve(true);
                 }
             ), 'installing packages ');
+            progress({ txt: projectName+" init successful, enjoy!", percent: 1 });
             shelljs.exec('npm start');
         }
     } else {

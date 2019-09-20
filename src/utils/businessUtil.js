@@ -102,7 +102,6 @@ const themeColor = '#C8102e';
 mergeBasicLayoutFile = ({ BasicLayoutPath, FooterTplPath, projectName, icoPath, icoTplPath, globalLessTplPath, globalLessPath }) => {
     copyFile(icoTplPath, icoPath);
     appendFile(globalLessTplPath, globalLessPath);
-    console.log("logo replaced successful");
     let file = fs.readFileSync(BasicLayoutPath, 'utf-8').split('\n');
     let hasWriteHead = false;
     for (let i = 0, len = file.length; i < len; i++) {
@@ -136,8 +135,6 @@ mergeBasicLayoutFile = ({ BasicLayoutPath, FooterTplPath, projectName, icoPath, 
 
     }
     fs.writeFileSync(BasicLayoutPath, file.join('\n'));
-    console.log("footer replaced successful");
-}
 
 wirteLoginWords = ({ tplPath, filePath, projectName, lang, index }) => {
     readTepmlate({
