@@ -1,5 +1,5 @@
   block: {
-    defaultGitUrl: 'http://git.homecredit.cn/red-front-end/FE-blocks.git', 
+    defaultGitUrl: 'https://github.com/ant-design/pro-blocks', 
   },
   externals: {
     config: 'config', 
