@@ -37,12 +37,24 @@ const replaceFileContent = ({ path, content, reg }) => {
   fs.writeFileSync(path, tpl.join('\n'));
 }
 
-const replaceJSONContent = ({ path, content }) => {
+const replaceJSONContent = ({ path, content, remove, add }) => {
   let json = fs.readFileSync(path, 'utf-8');
   json = JSON.parse(json);
   for (let k in content) {
     json[k] = content[k];
   }
+  remove.forEach((item) => {
+    if (item.indexOf('/') >= 0) {
+      const keys = item.split('/');
+      delete json[keys[0]][keys[1]]; //TODO:多层级(大于两层)时的删除还没实现
+    } else {
+      delete json[item];
+    }
+  });
+  if (add.scripts) {
+    Object.assign(json.scripts, add.scripts);//TODO:目前只能添加scripts
+  }
+
   fs.writeFileSync(path, JSON.stringify(json, null, "\t"));
 }
 
@@ -69,6 +81,16 @@ const readTepmlate = ({ tplPath, options, cb }) => {
   )
 }
 
+const isFloderExist = fullPath => {
+  try {
+    const folder = fs.statSync(fullPath).isDirectory();
+    return folder;
+  }
+  catch (e) {
+    return false;
+  }
+}
+
 module.exports = {
   name,
   version,
@@ -79,5 +101,6 @@ module.exports = {
   replaceJSONContent,
   copyFile,
   readTepmlate,
-  appendFile
+  appendFile,
+  isFloderExist
 };

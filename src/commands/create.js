@@ -1,10 +1,5 @@
-// const axios = require('axios');
-const path = require('path');
 const shelljs = require('shelljs');
-const colors = require('colors');
-// 命令行交互工具
-const inquirer = require('inquirer');
-const { waiting, downloadPath, prompt, replaceFileContent, replaceJSONContent, copyFile, readTepmlate, appendFile } = require('../utils/index');
+const { waiting, downloadPath, prompt, replaceFileContent, replaceJSONContent, copyFile, appendFile, isFloderExist } = require('../utils/index');
 const { mergeConfigFile, mergeBasicLayoutFile, wirteLoginWords } = require('../utils/businessUtil');
 const { progress } = require('../utils/progress');
 const { promisify } = require('util');
@@ -13,6 +8,7 @@ const fs = require('fs'); //文件模块
 let downLoadGit = require('download-git-repo');
 downLoadGit = promisify(downLoadGit);
 
+const node_modules_path = `${downloadPath}/node_modules`;
 const packageJsonPath = `${downloadPath}/package.json`;
 const documentEjsPath = `${downloadPath}/src/pages/document.ejs`;
 const defaultSettingsPath = `${downloadPath}/config/defaultSettings.ts`;
@@ -36,6 +32,7 @@ const documentEjsTplPath = `${__dirname}/../template/document.ejs.tpl`;
 const configTsTplPath = `${__dirname}/../template/config.ts.tpl`;
 const configTsPluginTplPath = `${__dirname}/../template/config.ts.plugin.tpl`;
 const routeConfigTsTplPath = `${__dirname}/../template/router.config.ts.tpl`;
+const routerConfigNoLoginTplPath = `${__dirname}/../template/router.config.noLogin.tpl`;
 const configLessTplPath = `${__dirname}/../template/config.less.tpl`;
 const globalLessTplPath = `${__dirname}/../template/global.less.tpl`;
 const requestTplPath = `${__dirname}/../template/request.ts.tpl`;
@@ -89,7 +86,7 @@ module.exports = async (projectName, args) => {
     if (fetchCb) {
         progress({ txt: "Get ant pro successful", percent: 0.15 });
         // tip:将修改好的版本号,项目名称写回package.json文件
-        replaceJSONContent({ path: packageJsonPath, content: { name: projectName, author } });
+        replaceJSONContent({ path: packageJsonPath, content: { name: projectName, author }, remove: ['husky', 'devDependencies/husky'], add: { scripts: { 'add:login': 'umi block add Login --page', 'add:newblock': 'umi block add newblock --page' } } });
         // tip:将项目名称写入模板的title
         const documentEjsTpl = fs.readFileSync(documentEjsTplPath, 'utf-8');
         replaceFileContent({
@@ -108,7 +105,7 @@ module.exports = async (projectName, args) => {
 
         if (mergeConfig) {
             // tip:替换config文件
-            mergeConfigFile({ configTsPath, routeConfigTsTplPath, routeConfigTsPath, configTsTplPath, configTsPluginTplPath });
+            mergeConfigFile({ configTsPath, routeConfigTsTplPath: addLogin ? routeConfigTsTplPath : routerConfigNoLoginTplPath, routeConfigTsPath, configTsTplPath, configTsPluginTplPath });
             progress({ txt: "config.ts replaced successful", percent: 0.25 });
         }
         if (mergeRequest) {
@@ -129,18 +126,20 @@ module.exports = async (projectName, args) => {
                     resolve(true);
                 }
             ), 'installing packages ');
-            if (addLogin) {
-                console.log("Begin to add Login block");
-                shelljs.cd(downloadPath);
-                shelljs.exec('umi block add Login --page');
-                copyFile(logoTplPath, logoPath);
-                copyFile(UserLayoutTplPath, UserLayoutPath);
-                copyFile(UserLayoutLessTplPath, UserLayoutLessPath);
+        }
+        if (addLogin && isFloderExist(node_modules_path)) {
+            console.log("Begin to add Login block");
+            shelljs.cd(downloadPath);
+            shelljs.exec('npm run add:login');
+            copyFile(logoTplPath, logoPath);
+            copyFile(UserLayoutTplPath, UserLayoutPath);
+            copyFile(UserLayoutLessTplPath, UserLayoutLessPath);
 
-                wirteLoginWords({ tplPath: loginWordsEnTplPath, filePath: loginWordsEnPath, projectName, lang: 'en-US', index: loginWordsIndexPath });
-                wirteLoginWords({ tplPath: loginWordsCnTplPath, filePath: loginWordsCnPath, projectName, lang: 'zh-CN', index: loginWordsIndexPath });
-                progress({ txt: "Login block added successful", percent: 0.75 });
-            }
+            wirteLoginWords({ tplPath: loginWordsEnTplPath, filePath: loginWordsEnPath, projectName, lang: 'en-US', index: loginWordsIndexPath });
+            wirteLoginWords({ tplPath: loginWordsCnTplPath, filePath: loginWordsCnPath, projectName, lang: 'zh-CN', index: loginWordsIndexPath });
+            progress({ txt: "Login block added successful", percent: 0.75 });
+        }
+        if (isFloderExist(node_modules_path)) {
             progress({ txt: `${projectName} init successful, enjoy!`.rainbow, percent: 1 });
             shelljs.exec('npm start');
         }
